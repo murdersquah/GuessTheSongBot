@@ -37,53 +37,26 @@ async def login(interaction: discord.Interaction):
         "state": str(interaction.user.id),
     }
 
-    auth_url = (
+    url = (
         "https://accounts.spotify.com/authorize?"
         + urllib.parse.urlencode(params)
     )
 
     await interaction.response.send_message(
-        f"Click to connect Spotify:\n{auth_url}",
+        f"Click to connect Spotify:\n{url}",
         ephemeral=True
     )
 
 
 @bot.tree.command(
     name="guess",
-    description="Fetch spotify profile.",
+   description="Guess the song from the lyrics.",
 )
 async def guess(interaction: discord.Interaction):
-    user_id = interaction.user.id
-
-
-    access_token = spotify_tokens.get(user_id)
-
-    if not access_token:
-        await interaction.response.send_message(
-            "You have not connected your Spotify account."
-        )
-        return
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.spotify.com/v1/me",
-            headers={"Authorization": f"Bearer {access_token}"},
-        ) as resp:
-
-            if resp.status != 200:
-                await interaction.response.send_message(
-                    "Spotify authentication failed. Please reconnect your account."
-                )
-                return
-
-            profile = await resp.json()
-
-    display_name = profile.get("display_name", "Unknown")
-    spotify_id = profile.get("id")
-
     await interaction.response.send_message(
-        f"Spotify connected User: **{display_name}**\nID: `{spotify_id}`"
+        "Guess feature coming soon 🎵"
     )
+
 
 
 
