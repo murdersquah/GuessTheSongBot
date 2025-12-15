@@ -2,6 +2,7 @@ from flask import Flask, request
 import requests
 import base64
 import json
+import os
 
 with open("config.json") as f:
     config = json.load(f)
@@ -14,8 +15,14 @@ TOKENS_FILE = "tokens.json"
 app = Flask(__name__)
 
 def save_token(user_id: str, access_token: str):
-    with open(TOKENS_FILE, "r") as f:
-        tokens = json.load(f)
+    tokens = {}
+
+    if os.path.exists(TOKENS_FILE):
+        with open(TOKENS_FILE, "r") as f:
+            try:
+                tokens = json.load(f) 
+            except json.JSONDecodeError:
+                tokens = {}
 
     tokens[user_id] = access_token
 
