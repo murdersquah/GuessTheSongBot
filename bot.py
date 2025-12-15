@@ -2,6 +2,7 @@ import json
 import urllib.parse
 import discord
 from discord.ext import commands
+import os
 
 with open("config.json") as f:
     config = json.load(f)
@@ -22,8 +23,14 @@ bot = commands.Bot(
     intents=discord.Intents.all(),
 )
 def load_tokens():
+   if not os.path.exists(TOKENS_FILE):
+        return {}
+
     with open(TOKENS_FILE, "r") as f:
-        return json.load(f)
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
 
 def user_logged_in(user_id: int) -> bool:
     tokens = load_tokens()
@@ -56,12 +63,12 @@ async def login(interaction: discord.Interaction):
 
 @bot.tree.command(
     name="guess",
-    description="Guess the song from the lyrics. Requires spotify oauth connection.",
+    description="Guess the song. Requires spotify oauth connection.",
 )
 async def guess(interaction: discord.Interaction):
     if not user_logged_in(interaction.user.id):
         await interaction.response.send_message(
-            "❌ You must connect Spotify first using `/login`",
+            "You must connect Spotify first using `/login`",
             ephemeral=True
         )
         return
