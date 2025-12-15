@@ -1,5 +1,5 @@
 import json
-
+import random
 import discord
 from discord.ext import commands
 
@@ -29,7 +29,20 @@ async def on_ready():
     description="Guess the song from the lyrics. Requires spotify oauth connection.",
 )
 async def guess(interaction: discord.Interaction):
-    await interaction.response.send_message("To be implemented...")
+    embed = discord.Embed(
+        title="🎵 Guess The Song",
+        description="Choose a category to start the game (coming soon):",
+        color=discord.Color.blurple(),
+    )
+
+    embed.add_field(name=" Artist", value="Guess songs by an artist", inline=False)
+    embed.add_field(name="Album", value="Guess songs from an album ", inline=False)
+    embed.add_field(name="Liked Songs", value="Guess your liked songs", inline=False)
+    embed.add_field(name="Playlist", value="Guess playlist", inline=False)
+    embed.add_field(name="Trending Songs", value="Guess trending songs", inline=False)
+
+
+    await interaction.response.send_message(embed=embed)
 
 
 bot.run(TOKEN)
