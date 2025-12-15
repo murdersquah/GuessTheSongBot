@@ -1,4 +1,5 @@
 import json
+import aiohttp
 
 import discord
 from discord.ext import commands
@@ -15,7 +16,9 @@ bot = commands.Bot(
     is_case_insensitive=True,
     intents=discord.Intents.all(),
 )
-
+spotify_tokens = {
+}
+    
 
 @bot.event
 async def on_ready():
@@ -29,7 +32,39 @@ async def on_ready():
     description="Guess the song from the lyrics. Requires spotify oauth connection.",
 )
 async def guess(interaction: discord.Interaction):
-    await interaction.response.send_message("To be implemented...")
+    user_id = interaction.user.id
+
+
+    access_token = spotify_tokens.get(user_id)
+
+    if not access_token:
+        await interaction.response.send_message(
+            "You have not connected your Spotify account."
+        )
+        return
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://api.spotify.com/v1/me",
+            headers={"Authorization": f"Bearer {access_token}"},
+        ) as resp:
+
+            if resp.status != 200:
+                await interaction.response.send_message(
+                    "Spotify authentication failed. Please reconnect your account."
+                )
+                return
+
+            profile = await resp.json()
+
+    display_name = profile.get("display_name", "Unknown")
+    spotify_id = profile.get("id")
+
+    await interaction.response.send_message(
+        f"Spotify connected User: **{display_name}**\nID: `{spotify_id}`"
+    )
+
+
 
 
 bot.run(TOKEN)
